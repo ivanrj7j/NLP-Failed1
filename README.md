@@ -44,7 +44,7 @@ The project structure is organized as follows:
 ## Data 💾
 
 This project uses:
-   - [The Complete Works of William Shakespeare by William Shakespeare](https://www.gutenberg.org/ebooks/100)
+   - [Inshorts News Data](https://www.kaggle.com/datasets/shashichander009/inshorts-news-data)
 
 ## How to Contribute 🤝
 
