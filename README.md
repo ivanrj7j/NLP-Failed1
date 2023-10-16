@@ -41,6 +41,11 @@ The project structure is organized as follows:
 - `models/`: This is where we save our experimental model checkpoints and configurations.
 - `experiments/`: Dive into the heart of our experiments here, contribute, and explore the unconventional.
 
+## Data 💾
+
+This project uses:
+   - [The Complete Works of William Shakespeare by William Shakespeare](https://www.gutenberg.org/ebooks/100)
+
 ## How to Contribute 🤝
 
 This project thrives on experimental innovation. Here's how you can contribute:
