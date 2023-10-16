@@ -1,4 +1,4 @@
-# Experimental NLP Project: Pushing Language and AI Boundaries 🚀📚
+# NLP Experiments
 
 ## Introduction
 
