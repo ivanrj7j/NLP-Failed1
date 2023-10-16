@@ -12,7 +12,7 @@ In the first phase, we explore innovative approaches to word vectorization, aimi
 
 ### Phase 2: Trailblazing NLP Models 🤖
 
-In the second phase, we venture into uncharted waters, conducting experiments in sentiment analysis and named entity recognition (NER). Our models aim to break boundaries in text classification, understanding emotions, and identifying named entities in text data.
+In the second phase, we venture into uncharted waters, conducting experiments in sentiment analysis and named entity recognition (NER). 
 
 ### Phase 3: Trailblazing Comparative Analysis 📈
 
