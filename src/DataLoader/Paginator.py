@@ -1,5 +1,6 @@
 import numpy as np
 from DataLoader.Errors import PrmotionError
+from typing import Union
 
 class Paginator:
     """
@@ -11,13 +12,15 @@ class Paginator:
 
     This class will be used as a parent for other classes, and each child should  have a `nextBatch` method, `__next__` method wil use the `nextBatch` method to get data and store the later data. If the nextBatch returns data with size less than `m`, then the `nextBatch` method will be called again until batch size >= `m`
     """
-    def __init__(self, batchSize:int) -> None:
+    def __init__(self, batchSize:int, shouldShuffle=True) -> None:
         """
         Initiates the object
         
         Keyword arguments:
 
         batchSize -- number of items in the batch
+
+        shouldShuffle -- shuffles data if true
 
         Return: Initiates the object
         """
@@ -30,6 +33,8 @@ class Paginator:
         # can store data of any size 
 
         # initiating cache 
+
+        self.shouldShuffle = shouldShuffle
 
     def nextBatch(self) -> np.ndarray:
         """
@@ -54,7 +59,7 @@ class Paginator:
         aSize = a.shape[0]  
         bSize = b.shape[0]
 
-        if bSize == 0:
+        if bSize == 0 and aSize<=self.batchSize:
             raise PrmotionError("Nothing left to promote")
         
         if aSize==self.batchSize:
@@ -68,7 +73,10 @@ class Paginator:
             b = b[removeChunk:]
             # updating b
 
-            a = np.vstack((updateData, a))
+            if a.shape[0] > 0:
+                a = np.vstack((updateData, a))
+            else:
+                a = updateData
 
         elif aSize > self.batchSize:
             removeChunk = aSize-self.batchSize-1
@@ -78,7 +86,10 @@ class Paginator:
             a = a[:self.batchSize]
             # updating a 
 
-            b = np.vstack((updateData, b))
+            if b.shape[0] > 0:
+                b = np.vstack((b, updateData))
+            else:
+                b = updateData
 
 
         
@@ -98,7 +109,6 @@ class Paginator:
             self.cache1, self.cache2 = self.promoteData(self.cache1, self.cache2)    
         except PrmotionError:
             pass
-
         try:
             updatedData, self.cache1 = self.promoteData(data, self.cache1)
             return updatedData
@@ -107,14 +117,41 @@ class Paginator:
 
         return data
         
+    def __iter__(self):
+        return self
+    
+    def retrieveNextBatch(self) -> np.ndarray:
+        """
+        Calls nextBatch, returns the data returned, if it is bigger than batchsize, if not, calls itself again
+        
+        Keyword arguments:
+
+        currentData -- Current data
+
+        Return: next batch
+        """
+        currentData = self.nextBatch()
+
+        # print("data shapes", currentData.shape[0], self.batchSize)
+        while currentData.shape[0] <= self.batchSize:
+            currentData = np.vstack((currentData, self.nextBatch()))
+
+        return currentData
 
 
     def __next__(self):
         """
         Returns the next data
         """
-        futureData = self.nextBatch()
+        futureData = self.retrieveNextBatch()
+        newData = self.updateCache(futureData)
+        # print("shapes:", futureData.shape, newData.shape, "cacheSize:", self.cache1.shape, self.cache2.shape)
 
+        if self.shouldShuffle:
+            shuffleIndices = np.random.permutation(newData.shape[0])
+            newData = newData[shuffleIndices]
+
+        return newData
 
 
 
