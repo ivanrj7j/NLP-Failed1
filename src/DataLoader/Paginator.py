@@ -56,6 +56,9 @@ class Paginator:
 
         if bSize == 0:
             raise PrmotionError("Nothing left to promote")
+        
+        if aSize==self.batchSize:
+            return a, b
 
         if aSize < self.batchSize and bSize > 0:
             removeChunk = self.batchSize-aSize if (bSize > self.batchSize-aSize) else bSize
@@ -68,12 +71,11 @@ class Paginator:
             a = np.vstack((updateData, a))
 
         elif aSize > self.batchSize:
-            removeChunk = aSize-self.batchSize
+            removeChunk = aSize-self.batchSize-1
             updateData = a[removeChunk:]
-            print("updateData", '\n', updateData)
             # getting data to be deprmotoed 
 
-            a = a[:removeChunk]
+            a = a[:self.batchSize]
             # updating a 
 
             b = np.vstack((updateData, b))
