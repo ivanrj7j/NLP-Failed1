@@ -12,7 +12,7 @@ class NLPTokenizer:
         
         Keyword arguments:
 
-        tokenizer (str) -- Path to the tokenizer json file
+        tokenizerFile (str) -- Path to the tokenizer json file
 
         sequenceLength (int) -- Maximum tokens
 
