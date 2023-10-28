@@ -65,7 +65,7 @@ class NLPTokenizer:
         if shouldPad:
             return np.vstack( list( map( lambda x: self.pad(x), tokens ) ))
         else:
-            return tokens
+            return np.array(tokens)
         
     def decode(self, tokens:Union[np.ndarray, list[list[int]]]) -> list[str]:
         """
