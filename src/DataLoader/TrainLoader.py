@@ -1,7 +1,10 @@
 import numpy as np
 from DataLoader import Paginator
 from Tokenizer import NLPTokenizer
-import pandas as pd
+from tensorflow.data import Dataset
+from tensorflow import TensorSpec
+from tensorflow import int32 as tfInt32
+from tensorflow import constant
 from pandas.io.parsers.readers import TextFileReader
 
 class TrainLoader(Paginator):
@@ -74,4 +77,18 @@ class TrainLoader(Paginator):
     def __next__(self):
         array = super().__next__()
 
-        return np.hsplit(array, [-1])        
+        return np.hsplit(array, [-1])   
+
+    def getTensorflowDataset(self) -> Dataset:
+        """
+        Returns a tensorflow dataset based on the loader
+        """
+
+        def generatorFunc():
+            for x, y in self:
+                yield constant(x, tfInt32), constant(y, tfInt32)
+        
+        return Dataset.from_generator(generatorFunc, output_signature=((
+            TensorSpec(shape=(self.batchSize, self.sequenceLength), dtype=tfInt32),  # Features
+            TensorSpec(shape=(self.batchSize, 1), dtype=tfInt32)               # Labels
+        )))
