@@ -97,7 +97,7 @@ class Paginator:
     
     def updateCache(self, data:np.ndarray) -> np.ndarray:
         """
-        Updates the current cach
+        Updates the current cache
         
         Keyword arguments:
 
@@ -132,7 +132,6 @@ class Paginator:
         """
         currentData = self.nextBatch()
 
-        # print("data shapes", currentData.shape[0], self.batchSize)
         while currentData.shape[0] <= self.batchSize:
             currentData = np.vstack((currentData, self.nextBatch()))
 
@@ -143,9 +142,11 @@ class Paginator:
         """
         Returns the next data
         """
-        futureData = self.retrieveNextBatch()
-        newData = self.updateCache(futureData)
-        # print("shapes:", futureData.shape, newData.shape, "cacheSize:", self.cache1.shape, self.cache2.shape)
+        if self.cache1.shape[0] < self.batchSize:
+            futureData = self.retrieveNextBatch()
+            newData = self.updateCache(futureData)
+        else:
+            newData = self.updateCache(np.ndarray((0, *self.cache1.shape[1:]), self.cache1.dtype))
 
         if self.shouldShuffle:
             shuffleIndices = np.random.permutation(newData.shape[0])
