@@ -43,7 +43,7 @@ class TrainLoader(Paginator):
         data = self.data.__next__()['0']
         x, y = zip(*data.apply(lambda x: self.trainTokenizeText(x)))
 
-        return np.vstack(x), np.hstack(y)
+        return np.hstack((np.vstack(x), np.hstack(y).reshape(-1, 1)))
         
     
     def trainTokenizeText(self, text:str) -> np.ndarray:
@@ -71,7 +71,7 @@ class TrainLoader(Paginator):
         
         return np.vstack(x).astype(np.int32), np.array(y, dtype=np.int32)
     
-    def updateCache(self, data: np.ndarray) -> np.ndarray:
-        # TODO: update the method to support training and testing data 
-        return super().updateCache(data)
-        
+    def __next__(self):
+        array = super().__next__()
+
+        return np.hsplit(array, [-1])        
