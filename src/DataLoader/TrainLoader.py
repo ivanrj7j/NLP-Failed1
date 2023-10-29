@@ -1,6 +1,8 @@
 import numpy as np
 from DataLoader import Paginator
 from Tokenizer import NLPTokenizer
+import pandas as pd
+from pandas.io.parsers.readers import TextFileReader
 
 class TrainLoader(Paginator):
     """
@@ -11,7 +13,7 @@ class TrainLoader(Paginator):
     TrainLoader reads through a pandas iterable and tokenizes text using `NLPTokenizer`
     """
     
-    def __init__(self, batchSize: int, sequenceLength:int, tokenizerFile:str, shouldShuffle=True) -> None:
+    def __init__(self, batchSize: int, sequenceLength:int, tokenizerFile:str, data:TextFileReader, shouldShuffle=True) -> None:
         """
         Initiates module
         
@@ -31,9 +33,18 @@ class TrainLoader(Paginator):
         super().__init__(batchSize, shouldShuffle)
         self.tokenizer = NLPTokenizer(tokenizerFile, sequenceLength)
         self.sequenceLength = sequenceLength
+        self.data  = data
 
     def nextBatch(self) -> np.ndarray:
-        return super().nextBatch()
+        """
+        This method returns the next batch using the loaded data
+        """
+
+        data = self.data.__next__()['0']
+        x, y = zip(*data.apply(lambda x: self.trainTokenizeText(x)))
+
+        return np.vstack(x), np.hstack(y)
+        
     
     def trainTokenizeText(self, text:str) -> np.ndarray:
         """
@@ -59,4 +70,8 @@ class TrainLoader(Paginator):
                 y.append(vector[i])
         
         return np.vstack(x).astype(np.int32), np.array(y, dtype=np.int32)
+    
+    def updateCache(self, data: np.ndarray) -> np.ndarray:
+        # TODO: update the method to support training and testing data 
+        return super().updateCache(data)
         
