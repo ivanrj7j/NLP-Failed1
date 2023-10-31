@@ -4,7 +4,7 @@ from keras.models import Sequential, Model
 def createModel(sequenceLength:int, totalTokens:int, embeddingOutput:int, hiddenLayer:Sequential, name:str) -> Model:
     inputLayer = Input(sequenceLength, name="input_layer")
 
-    embeddingLayer = Embedding(sequenceLength, embeddingOutput, input_length=totalTokens, name="embedding_layer")(inputLayer)
+    embeddingLayer = Embedding(totalTokens, embeddingOutput, name="embedding_layer")(inputLayer)
     
     hiddenLayer = hiddenLayer(embeddingLayer)
 
