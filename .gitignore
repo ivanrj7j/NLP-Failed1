@@ -162,5 +162,7 @@ cython_debug/
 tests
 test*
 experiments/Tokenizer
+experiments/DataLoader
+experiments/ModelBuilds
 
 .vscode
