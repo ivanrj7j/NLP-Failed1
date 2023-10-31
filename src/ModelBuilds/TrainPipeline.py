@@ -1,5 +1,4 @@
 from keras.models import Sequential, Model
-from src.DataLoader import TrainLoader
 import json
 import os
 from uuid import uuid1

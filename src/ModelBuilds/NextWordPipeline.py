@@ -1,7 +1,7 @@
 from uuid import uuid1
 from keras.models import Model, Sequential
 from ModelBuilds.TrainPipeline import TrainPipeline
-from src.DataLoader import TrainLoader
+from DataLoader import TrainLoader
 from ModelBuilds.funcs import createModel
 
 class NextWordPipeline(TrainPipeline):
