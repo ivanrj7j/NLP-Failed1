@@ -3,7 +3,7 @@ from DataLoader import Paginator
 from Tokenizer import NLPTokenizer
 from tensorflow.data import Dataset
 from tensorflow import TensorSpec
-from tensorflow import int32 as tfInt32
+from tensorflow import uint16 as tfInt16
 from tensorflow import constant
 from pandas.io.parsers.readers import TextFileReader
 
@@ -68,11 +68,11 @@ class TrainLoader(Paginator):
                 start = max(0, i-self.sequenceLength)
                 data = vector[start:i]
                 if len(data) < self.sequenceLength:
-                    data = np.pad(data, (self.sequenceLength-len(data), 0), 'constant', constant_values=-1)
+                    data = np.pad(data, (self.sequenceLength-len(data), 0), 'constant', constant_values=0)
                 x.append(data)
                 y.append(vector[i])
         
-        return np.vstack(x).astype(np.int32), np.array(y, dtype=np.int32)
+        return np.vstack(x).astype(np.uint16), np.array(y, dtype=np.uint16)
     
     def __next__(self):
         array = super().__next__()
@@ -86,9 +86,9 @@ class TrainLoader(Paginator):
 
         def generatorFunc():
             for x, y in self:
-                yield constant(x, tfInt32), constant(y, tfInt32)
+                yield constant(x, tfInt16), constant(y, tfInt16)
         
         return Dataset.from_generator(generatorFunc, output_signature=((
-            TensorSpec(shape=(self.batchSize, self.sequenceLength), dtype=tfInt32),  # Features
-            TensorSpec(shape=(self.batchSize, 1), dtype=tfInt32)               # Labels
+            TensorSpec(shape=(self.batchSize, self.sequenceLength), dtype=tfInt16),  # Features
+            TensorSpec(shape=(self.batchSize, 1), dtype=tfInt16)               # Labels
         )))

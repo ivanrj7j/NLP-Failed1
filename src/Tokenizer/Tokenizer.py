@@ -38,7 +38,7 @@ class NLPTokenizer:
             raise ValueError(f"The given text should contain less than {self.sequenceLength} not {totalTokens}")
         
         if totalTokens < self.sequenceLength:
-            tokens = np.pad(tokens, (self.sequenceLength-totalTokens, 0), 'constant', constant_values=-1)
+            tokens = np.pad(tokens, (self.sequenceLength-totalTokens, 0), 'constant', constant_values=0)
 
         return tokens
     
@@ -78,6 +78,6 @@ class NLPTokenizer:
         Return: Decoded text
         """
 
-        unpaddedTokens = map(lambda x: x[x != -1], tokens)
+        unpaddedTokens = map(lambda x: x[x != 0], tokens)
 
         return list(map(lambda x: self.tokenizer.decode(x).replace(" ##", ""), unpaddedTokens))   
