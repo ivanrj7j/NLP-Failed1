@@ -2,9 +2,10 @@ import numpy as np
 from DataLoader import Paginator
 from Tokenizer import NLPTokenizer
 from tensorflow.data import Dataset
-from tensorflow import TensorSpec
+from tensorflow import TensorSpec, SparseTensorSpec
 from tensorflow import uint16 as tfInt16
-from tensorflow import constant
+from tensorflow import int32 as tfInt32
+from tensorflow import constant, cast, reshape
 from pandas.io.parsers.readers import TextFileReader
 
 class TrainLoader(Paginator):
@@ -86,9 +87,13 @@ class TrainLoader(Paginator):
 
         def generatorFunc():
             for x, y in self:
-                yield constant(x, tfInt16), constant(y, tfInt16)
+                columns = cast(reshape(y, (-1)), tf.int32)
+                rows = range(0, self.batchSize)
+
+                positions = tf.cast(tf.stack((rows, columns), 1), tf.int64)
+                yield constant(x, tfInt16)
         
         return Dataset.from_generator(generatorFunc, output_signature=((
             TensorSpec(shape=(self.batchSize, self.sequenceLength), dtype=tfInt16),  # Features
-            TensorSpec(shape=(self.batchSize, 1), dtype=tfInt16)               # Labels
+            SparseTensorSpec(shape=(self.batchSize, self.tokenizer.tokenizer.get_vocab_size()), dtype=tfInt32) # Labels
         )))
