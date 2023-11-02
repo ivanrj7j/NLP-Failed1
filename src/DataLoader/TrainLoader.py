@@ -2,7 +2,7 @@ import numpy as np
 from DataLoader import Paginator
 from Tokenizer import NLPTokenizer
 from tensorflow.data import Dataset
-from tensorflow import TensorSpec, SparseTensorSpec, SparseTensor, constant, cast, range, reshape, stack, ones_like
+from tensorflow import TensorSpec, constant, one_hot  
 from tensorflow import uint16 as tfInt16
 from tensorflow import int32 as tfInt32
 from tensorflow import uint8 as tfInt8
@@ -88,17 +88,9 @@ class TrainLoader(Paginator):
 
         def generatorFunc():
             for x, y in self:
-                columns = cast(reshape(y, (-1)), tfInt32)
-                rows = range(0, self.batchSize)
-
-                positions = cast(stack((rows, columns), 1), tfInt64)
-
-                values = ones_like(rows, tfInt8)
-
-                oneHot = SparseTensor(positions, values, (self.batchSize, 30003))
-                yield constant(x, tfInt16), oneHot
+                yield constant(x, tfInt16), one_hot(y.reshape((-1)), self.tokenizer.tokenizer.get_vocab_size(), dtype=tfInt8)
         
         return Dataset.from_generator(generatorFunc, output_signature=((
             TensorSpec(shape=(self.batchSize, self.sequenceLength), dtype=tfInt16),  # Features
-            SparseTensorSpec(shape=(self.batchSize, self.tokenizer.tokenizer.get_vocab_size()), dtype=tfInt8) # Labels
+            TensorSpec(shape=(self.batchSize, self.tokenizer.tokenizer.get_vocab_size()), dtype=tfInt8) # Labels
         )))
