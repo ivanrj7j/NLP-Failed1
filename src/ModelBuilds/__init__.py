@@ -1,1 +1,3 @@
 from ModelBuilds.funcs import createModel
+from ModelBuilds.TrainPipeline import TrainPipeline
+from ModelBuilds.NextWordPipeline import NextWordPipeline

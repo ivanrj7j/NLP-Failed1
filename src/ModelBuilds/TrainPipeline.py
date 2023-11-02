@@ -14,7 +14,7 @@ class TrainPipeline:
 
     This stores all the evaluation data.
     """
-    def __init__(self, model:Sequential, data:TrainLoader, name:str=str(uuid1())) -> None:
+    def __init__(self, model:Sequential, data, name:str=str(uuid1())) -> None:
         """
         Initiates the pipeline
         
@@ -41,7 +41,7 @@ class TrainPipeline:
 
         `Should be implemented by child`
         """
-        raise NotImplementedError("This should be implemented by the child")
+        return self.baseModel
     
     def historyCallback(self, history):
         """
