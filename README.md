@@ -8,7 +8,7 @@ Welcome to our experimental NLP project, where we boldly challenge the limits of
 
 ### Phase 1: Experimental Word Vectorization 🧠
 
-In the first phase, we explore innovative approaches to word vectorization, aiming to create a new dimension in language understanding. We're experimenting with various techniques, including LSTM, RNN, CNN, and hybrid models. The goal is to uncover novel ways to represent words and their relations.
+In the first phase, we explore innovative approaches to word vectorization, aiming to create a new dimension in language understanding. We're experimenting with various techniques. The goal is to uncover novel ways to represent words and their relations.
 
 ### Phase 2: Trailblazing NLP Models 🤖
 
