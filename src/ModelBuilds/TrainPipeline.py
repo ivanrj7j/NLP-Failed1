@@ -1,7 +1,9 @@
 from keras.models import Sequential, Model
 import json
 import os
-from uuid import uuid1
+from string import ascii_lowercase
+from random import randint
+
 
 class TrainPipeline:
     """
@@ -13,7 +15,7 @@ class TrainPipeline:
 
     This stores all the evaluation data.
     """
-    def __init__(self, model:Sequential, data, name:str=str(uuid1())) -> None:
+    def __init__(self, model:Sequential, data, name:str=None) -> None:
         """
         Initiates the pipeline
         
@@ -28,11 +30,16 @@ class TrainPipeline:
         Return: None
         """
         
+        self.name = name
+        self.createName()
         self.baseModel = model
         self.data = data
         self.model = self.buildModel()
         self.history = {}
-        self.name = name
+
+    def createName(self):
+        if self.name is None or self.name == "":
+            self.name = "".join([ascii_lowercase[randint(0, len(ascii_lowercase)-1)] for _ in range(7)])
 
     def buildModel(self) -> Model:
         """
@@ -90,5 +97,6 @@ class TrainPipeline:
         Return: None
         """
 
-        self.model.save(os.path.join(path, f"{self.name}.h5"))
-        json.dump(self.history, os.path.join(path, f"{self.name}_eval.json"))
+        self.model.save(os.path.join(path, f"{self.name}.keras"))
+        with open(os.path.join(path, f"{self.name}_eval.json"), "w") as f:
+            json.dump(self.history, f)
