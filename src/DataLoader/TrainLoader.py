@@ -4,10 +4,9 @@ from Tokenizer import NLPTokenizer
 from tensorflow.data import Dataset
 from tensorflow import TensorSpec, constant, one_hot  
 from tensorflow import uint16 as tfInt16
-from tensorflow import int32 as tfInt32
 from tensorflow import uint8 as tfInt8
-from tensorflow import int64 as tfInt64
-from pandas.io.parsers.readers import TextFileReader
+from pandas import read_csv
+from copy import deepcopy
 
 class TrainLoader(Paginator):
     """
@@ -18,7 +17,7 @@ class TrainLoader(Paginator):
     TrainLoader reads through a pandas iterable and tokenizes text using `NLPTokenizer`
     """
     
-    def __init__(self, batchSize: int, sequenceLength:int, tokenizerFile:str, data:TextFileReader, shouldShuffle=True) -> None:
+    def __init__(self, batchSize: int, sequenceLength:int, tokenizerFile:str, dataFile:str, dataFileChunkSize:int, shouldShuffle=True) -> None:
         """
         Initiates module
         
@@ -26,9 +25,13 @@ class TrainLoader(Paginator):
 
         batchSize -- number of items in the batch
 
+        sequenceLength (int) -- Maximum tokens
+
         tokenizerFile (str) -- Path to the tokenizer json file
 
-        sequenceLength (int) -- Maximum tokens
+        dataFile (str) -- Path to the csv file containg data
+
+        dataFileChunkSize (str) -- Size of 1 chunk to load from csv
 
         shouldShuffle -- shuffles data if true
 
@@ -38,17 +41,25 @@ class TrainLoader(Paginator):
         super().__init__(batchSize, shouldShuffle)
         self.tokenizer = NLPTokenizer(tokenizerFile, sequenceLength)
         self.sequenceLength = sequenceLength
-        self.data  = data
+        
+        self.dataFile = dataFile
+        self.dataFileChunkSize = dataFileChunkSize
+
+        self.data = read_csv(dataFile, chunksize=dataFileChunkSize, index_col=False)
 
     def nextBatch(self) -> np.ndarray:
         """
         This method returns the next batch using the loaded data
         """
+        try:
+            data = self.data.__next__()['0']
+            x, y = zip(*data.apply(lambda x: self.trainTokenizeText(x)))
 
-        data = self.data.__next__()['0']
-        x, y = zip(*data.apply(lambda x: self.trainTokenizeText(x)))
+            return np.hstack((np.vstack(x), np.hstack(y).reshape(-1, 1)))
+        except StopIteration:
+            self.data = read_csv(self.dataFile, chunksize=self.dataFileChunkSize, index_col=False)
 
-        return np.hstack((np.vstack(x), np.hstack(y).reshape(-1, 1)))
+            raise StopIteration()
         
     
     def trainTokenizeText(self, text:str) -> np.ndarray:
