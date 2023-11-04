@@ -86,7 +86,7 @@ class TrainPipeline:
         # compiling model 
 
         lrReduce = ReduceLROnPlateau(patience=5)
-        checkPoint = ModelCheckpoint(os.path.join(self.path, f"{self.name}_checkpoint.keras"), save_best_only=True)
+        checkPoint = ModelCheckpoint(os.path.join(self.path, f"{self.name}_checkpoint"), save_best_only=True)
         earlyStopping = EarlyStopping(patience=5)
 
         callbacks = [lrReduce, checkPoint, earlyStopping]
