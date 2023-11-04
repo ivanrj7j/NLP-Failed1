@@ -7,10 +7,10 @@ class NextWordPipeline(TrainPipeline):
     """
     Used to train next word models
     """
-    def __init__(self, model: Sequential, data: TrainLoader, name: str = "", embeddingOutput:int=500, validData:TrainLoader=None) -> None:
+    def __init__(self, model: Sequential, data: TrainLoader,path:str, name: str = "", embeddingOutput:int=500, validData:TrainLoader=None) -> None:
         self.trainLoader = data
         self.embeddingOutput = embeddingOutput
-        super().__init__(model, data, name)
+        super().__init__(model, data, path, name)
         self.data = data.getTensorflowDataset()
         if validData is not None:
             self.validData = validData.getTensorflowDataset()
