@@ -15,7 +15,7 @@ class TrainPipeline:
 
     This stores all the evaluation data.
     """
-    def __init__(self, model:Sequential, data, name:str=None) -> None:
+    def __init__(self, model:Sequential, data, name:str=None, validData=None) -> None:
         """
         Initiates the pipeline
         
@@ -34,6 +34,7 @@ class TrainPipeline:
         self.createName()
         self.baseModel = model
         self.data = data
+        self.validData = validData
         self.model = self.buildModel()
         self.history = {}
 
@@ -80,7 +81,10 @@ class TrainPipeline:
         self.model.compile(optimizer, loss, metrics)
         # compiling model 
 
-        history = self.model.fit(self.data, epochs=epochs, shuffle=False)
+        if self.validData is None:
+            history = self.model.fit(self.data, epochs=epochs, shuffle=False)
+        else:
+            history = self.model.fit(self.data, epochs=epochs, shuffle=False, validation_data=self.validData)
         # training model 
 
         self.historyCallback(history)
