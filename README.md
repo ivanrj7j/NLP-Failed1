@@ -2,6 +2,8 @@
 
 ## Introduction
 
+# `This was failed, I will continue this project in another repository with the things i learned here 😭`
+
 Welcome to our experimental NLP project, where we boldly challenge the limits of language and AI. This project is a thrilling journey into uncharted territories of Natural Language Processing (NLP). We're redefining language understanding using innovative word vectorization techniques and groundbreaking NLP models. It's an experimental odyssey where unconventional ideas thrive.
 
 ## Project Phases
